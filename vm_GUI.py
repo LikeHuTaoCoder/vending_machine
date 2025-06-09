@@ -149,11 +149,20 @@ def admin_mode():
     def remove_drink_popup():
         remove_win = tk.Toplevel(admin_win)
         remove_win.title("음료 제거")
-        remove_win.geometry("300x400")
+        remove_win.geometry("300x200")
 
         tk.Label(remove_win, text="제거할 음료 선택", font=("맑은 고딕", 11)).pack(pady=10)
 
-        def confirm_remove(idx):
+        drink_names = [f"{d.name} ({d.num}개)" for d in vm.drinks]
+        combo_var = tk.StringVar()
+        combo = ttk.Combobox(remove_win, values=drink_names, state="readonly", textvariable=combo_var)
+        combo.pack(pady=10)
+
+        def confirm_remove():
+            idx = combo.current()
+            if idx == -1:
+                messagebox.showwarning("선택 오류", "제거할 음료를 선택해주세요.")
+                return
             name = vm.drinks[idx].name
             confirm = messagebox.askyesno("삭제 확인", f"'{name}' 음료를 정말 제거하시겠습니까?")
             if confirm:
@@ -162,9 +171,7 @@ def admin_mode():
                 update_display(f"'{name}' 음료가 제거되었습니다.")
             remove_win.destroy()
 
-        for i, drink in enumerate(vm.drinks):
-            label = f"{drink.name} ({drink.num}개)"
-            tk.Button(remove_win, text=label, width=25, command=lambda idx=i: confirm_remove(idx)).pack(pady=2)
+        tk.Button(remove_win, text="제거하기", command=confirm_remove).pack(pady=10)
 
     def add_stock_popup():
         stock_win = tk.Toplevel(window)
